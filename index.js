@@ -6,13 +6,14 @@ const PORT = process.env.PORT || 3000
 const app = express()
 
 app.use(cors())
+app.use(express.json())
 
 app.get('/', (req,res)=>{
-    res.json({message:'GET OK'})
+    res.send('the server is up and accessible')
 })
 
 app.post('/', (req,res)=>{
-    res.json({message:'POST OK'})
+    res.json({message:'POST OK', ...req.body})
 })
 
 app.patch('/', (req,res)=>{
@@ -20,7 +21,7 @@ app.patch('/', (req,res)=>{
 })
 
 app.delete('/', (req,res)=>{
-    res.json({message:'DELETE OK'})
+    res.json([])
 })
 
 app.listen(PORT, ()=>{console.log('Server is running...')})
