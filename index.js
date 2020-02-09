@@ -8,19 +8,19 @@ const app = express()
 app.use(cors())
 
 app.get('/', (req,res)=>{
-    res.send('GET OK')
+    res.json({message:'GET OK'})
 })
 
 app.post('/', (req,res)=>{
-    res.send('POST OK')
+    res.json({message:'POST OK'})
 })
 
 app.patch('/', (req,res)=>{
-    res.send('PATCH OK')
+    res.json({message:'PATCH OK'})
 })
 
 app.delete('/', (req,res)=>{
-    res.send('DELETE OK')
+    res.json({message:'DELETE OK'})
 })
 
 app.listen(PORT, ()=>{console.log('Server is running...')})
