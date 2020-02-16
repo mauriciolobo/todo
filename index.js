@@ -28,7 +28,11 @@ app.get('/:id', (req, res) => {
 })
 
 app.post('/', (req, res) => {
-    var doc = { ...req.body, completed: false };
+    var doc = {
+        ...req.body,
+        completed: false, 
+        url: req.protocol + '://' + req.get('host') + '/' + data.id
+    };
     db.insert(doc, (err, doc) => {
         res.send(doc)
     })
@@ -47,7 +51,7 @@ app.delete('/', (req, res) => {
 })
 
 app.delete('/:id', (req, res) => {
-    db.remove({id:req.params.id}, { }, (err, n) => {
+    db.remove({ id: req.params.id }, {}, (err, n) => {
         res.send(req.todo)
     })
 })
