@@ -1,6 +1,7 @@
 const express = require('express')
 const DbStore = require('nedb')
 const cors = require('cors')
+const uuid = require('uuid/v4')
 
 const PORT = process.env.PORT || 3000
 
@@ -31,12 +32,16 @@ app.get('/:id', (req, res) => {
 })
 
 app.post('/', (req, res) => {
+    var id = uuid();
     var doc = {
         ...req.body,
-        completed: false,         
+        completed: false, 
+        _id : id,
+        id,
+        url: req.protocol + '://' + req.get('host') + '/' + id
     };
     db.insert(doc, (err, doc) => {
-        res.send({...doc, url: req.protocol + '://' + req.get('host') + '/' + doc._id})
+        res.send(doc)
     })
 })
 
