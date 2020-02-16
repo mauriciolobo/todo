@@ -5,7 +5,12 @@ const PORT = process.env.PORT || 3000
 
 const app = express()
 
-app.use(cors())
+app.use(function(req, res, next) {
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    res.header('Access-Control-Allow-Methods', 'GET,POST,PATCH,DELETE');
+    res.header('Access-Control-Allow-Origin', '*');
+    next();
+  });
 app.use(express.json())
 
 app.get('/', (req,res)=>{
