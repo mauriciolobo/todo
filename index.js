@@ -16,43 +16,45 @@ function dbGetAll(res) {
     })
 }
 
+function dbGetOne(res, _id){
+    db.findOne({ _id }, (err, doc) => {
+        res.send(doc)
+    })
+}
+
 app.get('/', (req, res) => {
     dbGetAll(res)
 })
 
 app.get('/:id', (req, res) => {
-    var id = req.params.id;
-    db.findOne({ id }, (err, doc) => {
-        res.send(doc)
-    })
+    dbGetOne(res,req.params.id)
 })
 
 app.post('/', (req, res) => {
     var doc = {
         ...req.body,
-        completed: false, 
-        url: req.protocol + '://' + req.get('host') + '/' + data.id
+        completed: false,         
     };
     db.insert(doc, (err, doc) => {
-        res.send(doc)
+        res.send({...doc, url: req.protocol + '://' + req.get('host') + '/' + doc._id})
     })
 })
 
 app.patch('/:id', (req, res) => {
-    db.update({ id: req.params.id }, { $set: req.body }, {}, (err, number) => {
-        res.send(req.body)
+    db.update({ _id: req.params.id }, { $set: req.body }, {}, (err, number) => {
+        dbGetOne(res,req.params.id)
     })
 })
 
 app.delete('/', (req, res) => {
-    db.remove({}, { multi: true }, (err, n) => {
+    db.remove({}, { multi: true }, (err, n) => {        
         dbGetAll(res)
     })
 })
 
 app.delete('/:id', (req, res) => {
-    db.remove({ id: req.params.id }, {}, (err, n) => {
-        res.send(req.todo)
+    db.remove({ _id: req.params.id }, {}, (err, n) => {
+        dbGetOne(res,req.params.id)
     })
 })
 
