@@ -1,49 +1,55 @@
 const express = require('express')
 const DbStore = require('nedb')
+const cors = require('cors')
 
 const PORT = process.env.PORT || 3000
 
 const app = express()
 const db = new DbStore({ autoload: true, filename: 'todo' })
 
-app.use(function (req, res, next) {
-    res.header('Access-Control-Allow-Headers', 'Content-Type');
-    res.header('Access-Control-Allow-Methods', 'GET,POST,PATCH,DELETE');
-    res.header('Access-Control-Allow-Origin', '*');
-    next();
-});
+app.use(cors())
 app.use(express.json())
 
-function createTodo(req, data) {
-    return {
-      title: data.title,
-      order: data.order,
-      completed: data.completed || false,
-      url: req.protocol + '://' + req.get('host') + '/' + data.id
-    };
+function dbGetAll(res) {
+    db.find({}, (err, doc) => {
+        res.send(doc)
+    })
 }
 
 app.get('/', (req, res) => {
-    db.find({}, (err, data) => {
-        return res.send(data)
+    dbGetAll(res)
+})
+
+app.get('/:id', (req, res) => {
+    var id = req.params.id;
+    db.findOne({ id }, (err, doc) => {
+        res.send(doc)
     })
 })
 
 app.post('/', (req, res) => {
-    db.insert({
-        ...req.body,
-        completed: false,
-        url: req.protocol + '://' + req.get('host') + '/' + data.id
-    },
-        (err, data) => { return res.send(data) })
+    var doc = { ...req.body, completed: false };
+    db.insert(doc, (err, doc) => {
+        res.send(doc)
+    })
 })
 
 app.patch('/:id', (req, res) => {
-    res.send({ message: 'PATCH OK' })
+    db.update({ id: req.params.id }, { $set: req.body }, {}, (err, number) => {
+        res.send(req.body)
+    })
 })
 
 app.delete('/', (req, res) => {
-    res.send([])
+    db.remove({}, { multi: true }, (err, n) => {
+        dbGetAll(res)
+    })
+})
+
+app.delete('/:id', (req, res) => {
+    db.remove({id:req.params.id}, { }, (err, n) => {
+        res.send(req.todo)
+    })
 })
 
 app.listen(PORT, () => { console.log('Server is running...') })
